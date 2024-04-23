@@ -44,4 +44,14 @@ export interface IPost {
   coin_data: ICoinData;
   user_id: string;
   profile: IProfile;
+  comment_count: number;
+}
+
+export interface IComment {
+  id: number;
+  created_at: string;
+  content: string;
+  user_id: string;
+  post_id: number;
+  profile: IProfile;
 }

@@ -1,15 +1,46 @@
-import { Flex, Image, Text } from "@chakra-ui/react";
+import { Button, Flex, Image, Text, Textarea } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import supabaseClient from "../lib/supabaseClient";
-import { IPost } from "..";
+import { IComment, IPost } from "..";
 import DateText from "../components/DateText";
 import { getKoreanCurrency } from "../lib/koreanCurrencyConverter";
+import { OutletContext } from "../components/Layout";
+import CommentCard from "../components/CommentCard";
 
 const PostDetail: FC = () => {
   const [post, setPost] = useState<IPost>();
+  const [comment, setComment] = useState<IComment[]>([]);
+  const [content, setContent] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { session } = useOutletContext<OutletContext>();
 
   const { id } = useParams();
+
+  const onClickCreateComment = async () => {
+    try {
+      if (!content || content.length > 150) return;
+      // 150자 이내 표시
+
+      setIsLoading(true);
+
+      const { data } = await supabaseClient.functions.invoke("create-comment", {
+        body: {
+          content,
+          postId: id,
+        },
+      });
+
+      setComment([data, ...comment]);
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     supabaseClient.functions
@@ -22,27 +53,30 @@ const PostDetail: FC = () => {
           coin_data: JSON.parse(data.coin_data),
           user_id: data.user_id,
           profile: data.profile,
+          comment_count: data.comment_count,
         });
       });
-  }, []);
 
-  useEffect(() => {
-    console.log(post);
-  }, [post]);
+    supabaseClient.functions
+      .invoke("get-comments", { body: { postId: id } })
+      .then(({ data }) => {
+        setComment(data);
+      });
+  }, []);
 
   if (!post) return <Flex>Loading...</Flex>;
 
   return (
     <Flex flexDir="column">
-      <Flex roundedTop={12} p={2} flexDir="column">
+      <Flex roundedTop={12} py={2} flexDir={["column", "column", "row"]}>
         <Flex alignItems="center">
-          <Text noOfLines={2} isTruncated={true} fontSize={[12, 16]}>
+          <Flex noOfLines={2} isTruncated={true} fontSize={[12, 16]}>
             <Text display="inline-block" fontWeight="semibold">
               {post.profile.nickname}
             </Text>
             (#
             {post.user_id.substring(post.user_id.length - 4)})님의
-          </Text>
+          </Flex>
           <Image
             src={post.coin_data.image}
             alt={post.coin_data.symbol}
@@ -72,9 +106,32 @@ const PostDetail: FC = () => {
           <Text>→</Text>
         </Flex>
         <Flex ml={2}>
-          <Text w={[200, 500]} noOfLines={3}>
-            {post.content}
-          </Text>
+          <Text noOfLines={3}>{post.content}</Text>
+        </Flex>
+      </Flex>
+      <Flex flexDir="column">
+        <Textarea
+          h={20}
+          resize="none"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          isDisabled={isLoading || !session}
+          placeholder={session ? "" : "로그인이 필요합니다."}
+        />
+        <Button
+          onClick={onClickCreateComment}
+          isLoading={isLoading}
+          isDisabled={isLoading || !session}
+          w="fit-content"
+          alignSelf="end"
+          mt={2}
+        >
+          댓글 남기기
+        </Button>
+        <Flex mt={2} gap={1}>
+          {comment?.map((v, i) => (
+            <CommentCard key={i} comment={v} />
+          ))}
         </Flex>
       </Flex>
     </Flex>

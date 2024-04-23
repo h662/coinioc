@@ -15,11 +15,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { FC, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import FluctuationRange from "./FluctuationRange";
 import supabaseClient from "../lib/supabaseClient";
 import DateText from "./DateText";
 import { getKoreanCurrency } from "../lib/koreanCurrencyConverter";
+import { OutletContext } from "./Layout";
 
 interface CoinCardProps {
   index: number;
@@ -29,6 +30,8 @@ interface CoinCardProps {
 const CoinCard: FC<CoinCardProps> = ({ index, coinData }) => {
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { session } = useOutletContext<OutletContext>();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -177,7 +180,8 @@ const CoinCard: FC<CoinCardProps> = ({ index, coinData }) => {
               resize="none"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              isDisabled={isLoading}
+              isDisabled={isLoading || !session}
+              placeholder={session ? "" : "로그인이 필요합니다."}
             />
           </ModalBody>
 
@@ -186,7 +190,7 @@ const CoinCard: FC<CoinCardProps> = ({ index, coinData }) => {
               mr={3}
               onClick={onClickCreatePost}
               isLoading={isLoading}
-              isDisabled={isLoading}
+              isDisabled={isLoading || !session}
             >
               의견 남기기
             </Button>

@@ -30,6 +30,7 @@ const Post: FC = () => {
           coin_data: JSON.parse(v.coin_data),
           user_id: v.user_id,
           profile: v.profile,
+          comment_count: v.comment_count,
         };
       });
 
@@ -52,7 +53,8 @@ const Post: FC = () => {
     getPosts();
   }, []);
 
-  if (!posts) return <Flex>Loading...</Flex>;
+  // 로딩 버튼 없이 로딩만 뜨는지 확인
+  if (posts.length === 0) return <Flex>Loading...</Flex>;
 
   return (
     <>
