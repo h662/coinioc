@@ -11,8 +11,6 @@ interface PostCardProps {
 }
 
 const PostCard: FC<PostCardProps> = ({ post }) => {
-  console.log(post);
-
   const [isHover, setIsHover] = useState<boolean>(false);
 
   return (
