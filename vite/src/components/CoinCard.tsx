@@ -64,6 +64,7 @@ const CoinCard: FC<CoinCardProps> = ({ index, coinData }) => {
     <>
       <Flex
         alignItems="center"
+        justifyContent="space-between"
         bgColor="gray.100"
         shadow={200}
         p={1}
@@ -72,44 +73,52 @@ const CoinCard: FC<CoinCardProps> = ({ index, coinData }) => {
         mx="auto"
         cursor="pointer"
         onClick={onOpen}
+        w="full"
+        maxW={480}
       >
-        <Text
-          fontSize={[16, 20]}
-          noOfLines={1}
-          fontWeight="bold"
-          w={[10, 12]}
-          align="center"
-        >
-          {index + 1}
-        </Text>
-        <Image
-          src={coinData.image}
-          alt={coinData.symbol}
-          w={[8, 10]}
-          h={[8, 10]}
-          objectFit="cover"
-          rounded="full"
-        />
-        <Text
-          fontSize={[12, 20]}
-          noOfLines={1}
-          w={[20, 40]}
-          fontWeight="bold"
-          pl={1}
-        >
-          {coinData.name}
-        </Text>
-        <Text
-          fontSize={coinData.current_price >= 100 ? [12, 18] : [8, 12]}
-          w={[24, 40]}
-          align="right"
-        >
-          {coinData.current_price >= 100
-            ? Math.ceil(coinData.current_price).toLocaleString()
-            : coinData.current_price.toFixed(3)}{" "}
-          원
-        </Text>
-        <FluctuationRange coinData={coinData} width={[12, 16]} />
+        <Flex alignItems="center" justifyContent="space-between">
+          <Text
+            fontSize={[16, 16, 20]}
+            noOfLines={1}
+            fontWeight="bold"
+            w={[10, 12]}
+            align="center"
+          >
+            {index + 1}
+          </Text>
+          <Image
+            src={coinData.image}
+            alt={coinData.symbol}
+            w={[8, 8, 10]}
+            h={[8, 8, 10]}
+            objectFit="cover"
+            rounded="full"
+          />
+          <Text
+            fontSize={[12, 14, 20]}
+            noOfLines={1}
+            w={[20, 24, 40]}
+            fontWeight="bold"
+            pl={1}
+          >
+            {coinData.name}
+          </Text>
+        </Flex>
+        <Flex alignItems="center" justifyContent="space-between">
+          <Text
+            fontSize={
+              coinData.current_price >= 100 ? [12, 14, 20] : [8, 10, 16]
+            }
+            w={[20, 24, 40]}
+            align="right"
+          >
+            {coinData.current_price >= 100
+              ? Math.ceil(coinData.current_price).toLocaleString()
+              : coinData.current_price.toFixed(3)}{" "}
+            원
+          </Text>
+          <FluctuationRange coinData={coinData} width={[12, 14, 16]} />
+        </Flex>
       </Flex>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

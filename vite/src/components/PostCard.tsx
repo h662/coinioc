@@ -1,10 +1,11 @@
 import { Flex, Image, Text } from "@chakra-ui/react";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FiMessageSquare } from "react-icons/fi";
+import { FiHeart, FiMessageSquare } from "react-icons/fi";
 import { IPost } from "..";
 import DateText from "./DateText";
 import { getKoreanCurrency } from "../lib/koreanCurrencyConverter";
+import supabaseClient from "../lib/supabaseClient";
 
 interface PostCardProps {
   post: IPost;
@@ -12,6 +13,49 @@ interface PostCardProps {
 
 const PostCard: FC<PostCardProps> = ({ post }) => {
   const [isHover, setIsHover] = useState<boolean>(false);
+  const [likes, setLikes] = useState<number>();
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+
+  const onClickLike = async (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    try {
+      e.preventDefault();
+
+      if (likes === undefined) return;
+
+      const { data } = await supabaseClient.functions.invoke(
+        "toggle-post-like",
+        { body: { postId: post.id } }
+      );
+
+      if (data.is_liked) {
+        setLikes(likes + 1);
+        setIsLiked(true);
+      } else {
+        setLikes(likes - 1);
+        setIsLiked(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    supabaseClient.functions
+      .invoke("get-post-likes-count", { body: { postId: post.id } })
+      .then(({ data }) => {
+        setLikes(data);
+      });
+
+    supabaseClient.functions
+      .invoke("get-post-is-liked", { body: { postId: post.id } })
+      .then(({ data }) => {
+        if (!data) return;
+
+        setIsLiked(data.is_liked);
+      });
+  }, []);
 
   return (
     <Link to={`/post/${post.id}`}>
@@ -64,16 +108,35 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
               </Text>
             </Flex>
           </Flex>
-          <Flex alignItems="start" gap={2}>
-            <Text
-              display="flex"
-              alignItems="center"
-              fontSize={[16, 20]}
-              gap={1}
-            >
-              <FiMessageSquare /> {post.comment_count}
-            </Text>
-          </Flex>
+          {likes !== undefined && (
+            <Flex alignItems="start" gap={[2, 4]}>
+              <Flex
+                display="flex"
+                alignItems="center"
+                fontSize={[16, 20]}
+                gap={1}
+                _hover={{ color: "gray.500" }}
+              >
+                <FiMessageSquare />
+                <Text w={[2.5, 5]} textAlign="right">
+                  {post.comment_count}
+                </Text>
+              </Flex>
+              <Flex
+                display="flex"
+                alignItems="center"
+                fontSize={[16, 20]}
+                gap={1}
+                _hover={{ color: "gray.500" }}
+                onClick={onClickLike}
+              >
+                <FiHeart color={isLiked ? "red" : ""} />{" "}
+                <Text w={[2.5, 5]} textAlign="right">
+                  {likes}
+                </Text>
+              </Flex>
+            </Flex>
+          )}
         </Flex>
         <Flex
           roundedBottom={12}

@@ -91,7 +91,7 @@ const PostDetail: FC = () => {
           </Text>
           <Text fontSize={[12, 16]}>에 대한 의견</Text>
         </Flex>
-        <Flex>
+        <Flex alignItems="center" ml={[0, 0, 2]}>
           <DateText date={post.created_at} hours={true} fontSize={[12, 16]} />
           <Text fontSize={[12, 16]} ml={1}>
             기준,

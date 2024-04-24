@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Button,
   Flex,
   Image,
@@ -31,7 +32,7 @@ const Header: FC<HeaderProps> = ({ session, profile }) => {
           </Text>
         </Flex>
       </Link>
-      <Flex alignItems="center">
+      <Box display={["none", "none", "flex"]} alignItems="center">
         <Link to="/">
           <Button variant="ghost" size={["xs", "md"]}>
             코인 가격
@@ -56,7 +57,7 @@ const Header: FC<HeaderProps> = ({ session, profile }) => {
           <Menu>
             <MenuButton
               as={Button}
-              maxW={[20, 40]}
+              maxW={40}
               noOfLines={1}
               display="flex"
               alignItems="center"
@@ -82,7 +83,51 @@ const Header: FC<HeaderProps> = ({ session, profile }) => {
             </Button>
           </Link>
         )}
-      </Flex>
+      </Box>
+      <Box display={["flex", "flex", "none"]}>
+        {session ? (
+          <Menu>
+            <MenuButton
+              as={Button}
+              maxW={40}
+              noOfLines={1}
+              display="flex"
+              alignItems="center"
+              variant="ghost"
+              size={["xs", "md"]}
+            >
+              <Flex alignItems="center" gap={1} fontSize={[10, 12]}>
+                {profile && <Avatar size="xs" name={profile.nickname} />}
+                {profile ? profile.nickname : session.user.email}
+              </Flex>
+            </MenuButton>
+            <MenuList>
+              <MenuItem>내 프로필</MenuItem>
+              <MenuItem>
+                <Link to="/">코인 가격</Link>
+              </MenuItem>
+              <MenuItem>
+                <Link to="/post">코인 의견</Link>
+              </MenuItem>
+              <MenuItem>
+                <Link to="/news">주요 뉴스</Link>
+              </MenuItem>
+              <MenuItem>
+                <Link to="/qna">Q&A</Link>
+              </MenuItem>
+              <MenuItem onClick={() => supabaseClient.auth.signOut()}>
+                로그아웃
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        ) : (
+          <Link to="/sign-in">
+            <Button ml={2} size={["xs", "md"]}>
+              로그인
+            </Button>
+          </Link>
+        )}
+      </Box>
     </Flex>
   );
 };
