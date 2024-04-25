@@ -57,7 +57,7 @@ const CommentCard: FC<CommentCardProps> = ({ comment }) => {
 
   return (
     <Flex fontSize={[12, 16]}>
-      <Flex justifyContent="end" flexDir={"column"}>
+      <Flex w={200} alignItems="end" flexDir="column">
         <Flex>
           <Text fontWeight="semibold">{comment.profile.nickname}</Text>
           (#
@@ -69,7 +69,9 @@ const CommentCard: FC<CommentCardProps> = ({ comment }) => {
           })}
         </Text>
       </Flex>
-      <Flex ml={2}>{comment.content}</Flex>
+      <Flex flexGrow={1} ml={2}>
+        {comment.content}
+      </Flex>
       <Flex
         alignItems="center"
         fontSize={[16, 20]}

@@ -1,28 +1,83 @@
-import { Flex, Grid, Text } from "@chakra-ui/react";
-import axios from "axios";
+import { Button, Flex, Grid, Text } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import YoutubeCard from "../components/YoutubeCard";
+import supabaseClient from "../lib/supabaseClient";
+import { INews, IYoutube } from "..";
+import NewsCard from "../components/NewsCard";
 
 const News: FC = () => {
-  const [youtubeData, setYouTubeData] = useState<any[]>([]);
+  const [youtubeData, setYoutubeData] = useState<IYoutube[]>([]);
+  const [youtubePage, setYoutubePage] = useState<number>(0);
+  const [isYoutubeLastPage, setIsYoutubeLastPage] = useState<boolean>(false);
+  const [isYoutubeLoading, setIsYoutubeLoading] = useState<boolean>(false);
+  const [newsData, setNewsData] = useState<INews[]>([]);
+  const [newsPage, setNewsPage] = useState<number>(0);
+  const [isNewsLastPage, setIsNewsLastPage] = useState<boolean>(false);
+  const [isNewsLoading, setIsNewsLoading] = useState<boolean>(false);
 
-  const getYoutube = async () => {
+  const getYotubes = async () => {
     try {
-      const { data } = await axios.get(
-        `https://www.googleapis.com/youtube/v3/search?key=${
-          import.meta.env.VITE_YOUTUBE_KEY
-        }&part=snippet&maxResults=6&q=${encodeURI("블록체인")}`
-      );
+      if (isYoutubeLastPage) return;
 
-      setYouTubeData(data.items);
+      setIsYoutubeLoading(true);
+
+      const { data } = await supabaseClient.functions.invoke("get-youtubes", {
+        body: { page: youtubePage },
+      });
+
+      if (data.length === 0) {
+        setIsYoutubeLastPage(true);
+        setIsYoutubeLoading(false);
+        return;
+      }
+
+      setYoutubeData([...youtubeData, ...data]);
+      setYoutubePage(youtubePage + 1);
+
+      if (data.length !== 2) {
+        setIsYoutubeLastPage(true);
+      }
+
+      setIsYoutubeLoading(false);
+    } catch (error) {
+      console.error(error);
+
+      setIsYoutubeLoading(false);
+    }
+  };
+
+  const getNews = async () => {
+    try {
+      if (isNewsLastPage) return;
+
+      setIsNewsLoading(true);
+
+      const { data } = await supabaseClient.functions.invoke("get-news", {
+        body: { page: newsPage },
+      });
+
+      if (data.length === 0) {
+        setIsNewsLastPage(true);
+        setIsNewsLoading(false);
+        return;
+      }
+
+      setNewsData([...newsData, ...data]);
+      setNewsPage(newsPage + 1);
+
+      if (data.length !== 2) {
+        setIsNewsLastPage(true);
+      }
+
+      setIsNewsLoading(false);
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    getYoutube();
+    getYotubes();
+    getNews();
   }, []);
 
   return (
@@ -33,34 +88,29 @@ const News: FC = () => {
         w="full"
         alignItems="start"
         fontSize={[16, 20]}
-        mt={4}
+        mt={8}
         gap={2}
+        pb={8}
       >
         <Text fontWeight="bold">주요 뉴스</Text>
-        <Link to="https://www.blockmedia.co.kr/archives/505538" target="_blank">
-          <Text decoration="underline">
-            - 비트코인 장기보유자 매도세 4개월 만에 주춤
-          </Text>
-        </Link>
-        <Link
-          to="https://www.digitaltoday.co.kr/news/articleView.html?idxno=514014"
-          target="_blank"
+        <Grid
+          templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)"]}
+          gap={6}
+          alignSelf="center"
         >
-          <Text decoration="underline">
-            - 1분기 암호화폐 거래량, 원화가 달러 추월…"거래소 수수료 전쟁 덕"
-          </Text>
-        </Link>
-        <Link to="https://www.coinreaders.com/106664" target="_blank">
-          <Text decoration="underline">
-            - 이더리움 고래들 패닉에 빠졌다?...ETH 3천달러 위협
-          </Text>
-        </Link>
-        <Link to="https://www.etoday.co.kr/news/view/2351323" target="_blank">
-          <Text decoration="underline">
-            - 파월 ‘매파 발언’에 우는 비트코인…중동 위기 감소·美 경제 강세에도
-            약세 [Bit코인]
-          </Text>
-        </Link>
+          {newsData.map((v, i) => (
+            <NewsCard key={i} newsData={v} />
+          ))}
+        </Grid>
+        <Flex mt={2} w="full" justifyContent="center">
+          <Button
+            onClick={getNews}
+            isLoading={isNewsLoading}
+            isDisabled={isNewsLoading || isNewsLastPage}
+          >
+            더보기
+          </Button>
+        </Flex>
       </Flex>
       <Flex
         mx="auto"
@@ -79,9 +129,18 @@ const News: FC = () => {
           alignSelf="center"
         >
           {youtubeData.map((v, i) => (
-            <YoutubeCard key={i} item={v} />
+            <YoutubeCard key={i} youtubeData={v} />
           ))}
         </Grid>
+        <Flex mt={2} w="full" justifyContent="center">
+          <Button
+            onClick={getYotubes}
+            isLoading={isYoutubeLoading}
+            isDisabled={isYoutubeLoading || isYoutubeLastPage}
+          >
+            더보기
+          </Button>
+        </Flex>
       </Flex>
     </>
   );

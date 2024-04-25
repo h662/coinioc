@@ -34,6 +34,7 @@ const PostDetail: FC = () => {
 
       setComment([data, ...comment]);
 
+      setContent("");
       setIsLoading(false);
     } catch (error) {
       console.error(error);
@@ -128,7 +129,7 @@ const PostDetail: FC = () => {
         >
           댓글 남기기
         </Button>
-        <Flex mt={2} gap={1}>
+        <Flex mt={2} gap={2} flexDir="column">
           {comment?.map((v, i) => (
             <CommentCard key={i} comment={v} />
           ))}

@@ -55,3 +55,18 @@ export interface IComment {
   post_id: number;
   profile: IProfile;
 }
+
+export interface IYoutube {
+  id: number;
+  created_at: string;
+  video_id: string;
+}
+
+export interface INews {
+  id: number;
+  created_at: string;
+  title: string;
+  channel_title: string;
+  url: string;
+  thumbnail: string;
+}

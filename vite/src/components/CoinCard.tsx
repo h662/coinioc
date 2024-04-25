@@ -114,7 +114,9 @@ const CoinCard: FC<CoinCardProps> = ({ index, coinData }) => {
           >
             {coinData.current_price >= 100
               ? Math.ceil(coinData.current_price).toLocaleString()
-              : coinData.current_price.toFixed(3)}{" "}
+              : coinData.current_price >= 0.001
+              ? coinData.current_price.toFixed(3)
+              : coinData.current_price.toFixed(6)}{" "}
             원
           </Text>
           <FluctuationRange coinData={coinData} width={[12, 14, 16]} />
@@ -168,7 +170,9 @@ const CoinCard: FC<CoinCardProps> = ({ index, coinData }) => {
               </Text>{" "}
               {coinData.current_price >= 100
                 ? getKoreanCurrency(coinData.current_price)
-                : coinData.current_price.toFixed(3)}
+                : coinData.current_price >= 0.001
+                ? coinData.current_price.toFixed(3)
+                : coinData.current_price.toFixed(6)}
               원 <FluctuationRange coinData={coinData} fontSize={[12, 16]} />
             </Box>
             <Box>
@@ -177,7 +181,9 @@ const CoinCard: FC<CoinCardProps> = ({ index, coinData }) => {
               </Text>{" "}
               {coinData.ath >= 100
                 ? getKoreanCurrency(Math.ceil(coinData.ath))
-                : coinData.ath.toFixed(3)}
+                : coinData.ath >= 0.001
+                ? coinData.ath.toFixed(3)
+                : coinData.ath.toFixed(6)}
               원{" "}
               <Text display="inline-block" textColor="blue.500" fontSize={14}>
                 {coinData.ath_change_percentage.toFixed(2)}%

@@ -7,7 +7,7 @@ import PostCard from "../components/PostCard";
 const Post: FC = () => {
   const [posts, setPosts] = useState<IPost[]>([]);
   const [page, setPage] = useState<number>(0);
-  const [isLastPage, setisLastPage] = useState<boolean>(false);
+  const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getPosts = async () => {
@@ -20,7 +20,11 @@ const Post: FC = () => {
         body: { page },
       });
 
-      if (data.length === 0) return;
+      if (data.length === 0) {
+        setIsLastPage(true);
+        setIsLoading(false);
+        return;
+      }
 
       const temp = data.map((v: any) => {
         return {
@@ -38,7 +42,7 @@ const Post: FC = () => {
       setPage(page + 1);
 
       if (data.length !== 2) {
-        setisLastPage(true);
+        setIsLastPage(true);
       }
 
       setIsLoading(false);

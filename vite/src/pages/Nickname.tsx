@@ -57,14 +57,14 @@ const Nickname: FC = () => {
             placeholder="닉네임"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
-            isDisabled={!isLoading}
+            isDisabled={isLoading}
           />
           <Flex gap={2}>
             <Button
               onClick={onClickCreateNickname}
               isLoading={isLoading}
               loadingText="처리중..."
-              isDisabled={!isLoading}
+              isDisabled={isLoading}
             >
               확인
             </Button>

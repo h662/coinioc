@@ -6,22 +6,16 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  const authHeader = req.headers.get("Authorization")!;
-  const { content, postId } = await req.json();
+  const { page } = await req.json();
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-    { global: { headers: { Authorization: authHeader } } },
   );
 
-  const { data: { user } } = await supabaseClient.auth.getUser();
-
-  const { data } = await supabaseClient.from("comment").insert({
-    content,
-    user_id: user?.id,
-    post_id: postId,
-  }).select("*, profile!inner(*)").single();
+  const { data } = await supabaseClient.from("youtube").select().order("id", {
+    ascending: false,
+  }).range(0 + page * 2, 1 + page * 2);
 
   return new Response(JSON.stringify(data), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -5,12 +5,14 @@ interface FluctuationRangeProps {
   coinData: any;
   width?: number[];
   fontSize?: number[];
+  isBrackets?: boolean;
 }
 
 const FluctuationRange: FC<FluctuationRangeProps> = ({
   coinData,
   width = "fit-content",
   fontSize = 14,
+  isBrackets = false,
 }) => {
   return (
     <Text
@@ -29,12 +31,14 @@ const FluctuationRange: FC<FluctuationRangeProps> = ({
       }
       display="inline-block"
     >
+      {isBrackets && "("}
       {coinData.price_change_percentage_24h.toFixed(1) == 0
         ? ""
         : coinData.price_change_percentage_24h > 0
         ? "+"
         : "-"}
       {Math.abs(coinData.price_change_percentage_24h.toFixed(1))}%
+      {isBrackets && ")"}
     </Text>
   );
 };

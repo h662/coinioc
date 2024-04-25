@@ -1,15 +1,33 @@
 import { Flex, Image, Text } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { IYoutube } from "..";
+import axios from "axios";
 
 interface YoutubeCardProps {
-  item: any;
+  youtubeData: IYoutube;
 }
 
-const YoutubeCard: FC<YoutubeCardProps> = ({ item }) => {
+const YoutubeCard: FC<YoutubeCardProps> = ({ youtubeData }) => {
+  const [channelTitle, setChannelTitle] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+
+  useEffect(() => {
+    axios
+      .get(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${
+          youtubeData.video_id
+        }&key=${import.meta.env.VITE_YOUTUBE_KEY}`
+      )
+      .then(({ data }) => {
+        setTitle(data.items[0].snippet.title);
+        setChannelTitle(data.items[0].snippet.channelTitle);
+      });
+  }, []);
+
   return (
     <Link
-      to={`https://www.youtube.com/watch?v=${item.id.videoId}`}
+      to={`https://www.youtube.com/watch?v=${youtubeData.video_id}`}
       target="_blank"
     >
       <Flex
@@ -17,21 +35,22 @@ const YoutubeCard: FC<YoutubeCardProps> = ({ item }) => {
         flexDir="column"
         bgColor="gray.100"
         _hover={{ bgColor: "gray.200" }}
-        rounded={20}
+        rounded={12}
+        pb={2}
       >
         <Image
           w={360}
           h={270}
           objectFit="cover"
-          src={item.snippet.thumbnails.high.url}
-          alt={item.snippet.title}
+          src={`https://img.youtube.com/vi/${youtubeData.video_id}/0.jpg`}
+          alt={youtubeData.video_id}
           roundedTop={20}
         />
         <Text mt={2} mx={2} fontWeight="semibold">
-          {item.snippet.channelTitle}
+          {channelTitle}
         </Text>
         <Text my={2} mx={2}>
-          {item.snippet.title}
+          {title}
         </Text>
       </Flex>
     </Link>

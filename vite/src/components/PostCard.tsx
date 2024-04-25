@@ -6,6 +6,7 @@ import { IPost } from "..";
 import DateText from "./DateText";
 import { getKoreanCurrency } from "../lib/koreanCurrencyConverter";
 import supabaseClient from "../lib/supabaseClient";
+import FluctuationRange from "./FluctuationRange";
 
 interface PostCardProps {
   post: IPost;
@@ -106,6 +107,9 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
               <Text fontSize={[12, 16]} ml={2} fontWeight="semibold">
                 {getKoreanCurrency(post.coin_data.current_price)}원
               </Text>
+              <Flex alignItems="center" ml={2}>
+                <FluctuationRange coinData={post.coin_data} isBrackets={true} />
+              </Flex>
             </Flex>
           </Flex>
           {likes !== undefined && (
