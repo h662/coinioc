@@ -10,17 +10,16 @@ const NotFound: FC = () => {
         <Flex
           bgColor="white"
           rounded={20}
-          py={4}
-          px={8}
+          py={[4, 10]}
+          px={[6, 20]}
           flexDir="column"
           alignItems="center"
+          gap={10}
         >
           <Text fontSize={20} fontWeight="bold">
             404 Not Found.
           </Text>
-          <Text fontSize={28} mb={4}>
-            페이지를 찾을 수 없습니다.
-          </Text>
+          <Text fontSize={28}>페이지를 찾을 수 없습니다.</Text>
           <Link to="/">
             <Button>홈으로</Button>
           </Link>

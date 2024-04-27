@@ -7,6 +7,7 @@ Deno.serve(async (req) => {
   }
 
   const authHeader = req.headers.get("Authorization")!;
+  const { newsId } = await req.json();
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -16,23 +17,31 @@ Deno.serve(async (req) => {
 
   const { data: { user } } = await supabaseClient.auth.getUser();
 
-  const { data: existProfileData } = await supabaseClient.from("profile")
-    .select().eq(
-      "id",
-      user?.id,
-    ).single();
+  const { data: isLikedData } = await supabaseClient.from("like").select()
+    .match({
+      user_id: user?.id,
+      news_id: newsId,
+    }).single();
 
-  if (existProfileData) {
-    return new Response(JSON.stringify(existProfileData), {
+  if (isLikedData) {
+    const { data } = await supabaseClient.from("like").update({
+      is_liked: !isLikedData.is_liked,
+    }).match({
+      user_id: user?.id,
+      news_id: newsId,
+    }).select().single();
+
+    return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } else {
-    const { data: newProfileData } = await supabaseClient.from("profile")
-      .insert({
-        id: user?.id,
-      }).select().single();
+    const { data } = await supabaseClient.from("like").insert({
+      user_id: user?.id,
+      news_id: newsId,
+      is_liked: true,
+    }).select().single();
 
-    return new Response(JSON.stringify(newProfileData), {
+    return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

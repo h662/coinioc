@@ -6,7 +6,7 @@ import NotFound from "./pages/NotFound";
 import QNA from "./pages/QNA";
 import News from "./pages/News";
 import SignIn from "./pages/SignIn";
-import Nickname from "./pages/Nickname";
+import Profile from "./pages/Profile";
 import Post from "./pages/Post";
 import PostDetail from "./pages/PostDetail";
 
@@ -21,7 +21,7 @@ const App: FC = () => {
           <Route path="/news" element={<News />} />
           <Route path="/qna" element={<QNA />} />
           <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/nickname" element={<Nickname />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

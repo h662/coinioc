@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
   }
 
   const authHeader = req.headers.get("Authorization")!;
-  const { nickname } = await req.json();
+  const { youtubeId } = await req.json();
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -17,10 +17,9 @@ Deno.serve(async (req) => {
 
   const { data: { user } } = await supabaseClient.auth.getUser();
 
-  const { data } = await supabaseClient.from("profile").insert({
-    nickname,
-    id: user?.id,
-  }).select().single();
+  const { data } = await supabaseClient.from("like").select(
+    "*",
+  ).match({ user_id: user?.id, youtube_id: youtubeId }).single();
 
   return new Response(JSON.stringify(data), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },

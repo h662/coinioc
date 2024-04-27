@@ -11,9 +11,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { FC } from "react";
-import Logo from "/images/logo.svg";
 import { Link } from "react-router-dom";
 import { Session } from "@supabase/supabase-js";
+import { FiMoreVertical } from "react-icons/fi";
+
+import Logo from "/images/logo.svg";
 import supabaseClient from "../lib/supabaseClient";
 
 interface HeaderProps {
@@ -70,7 +72,9 @@ const Header: FC<HeaderProps> = ({ session, profile }) => {
               </Flex>
             </MenuButton>
             <MenuList>
-              <MenuItem>프로필</MenuItem>
+              <Link to="/profile">
+                <MenuItem>프로필</MenuItem>
+              </Link>
               <MenuItem onClick={() => supabaseClient.auth.signOut()}>
                 로그아웃
               </MenuItem>
@@ -102,7 +106,9 @@ const Header: FC<HeaderProps> = ({ session, profile }) => {
               </Flex>
             </MenuButton>
             <MenuList>
-              <MenuItem>내 프로필</MenuItem>
+              <Link to="/profile">
+                <MenuItem>프로필</MenuItem>
+              </Link>
               <MenuItem>
                 <Link to="/">코인 가격</Link>
               </MenuItem>
@@ -121,11 +127,41 @@ const Header: FC<HeaderProps> = ({ session, profile }) => {
             </MenuList>
           </Menu>
         ) : (
-          <Link to="/sign-in">
-            <Button ml={2} size={["xs", "md"]}>
-              로그인
-            </Button>
-          </Link>
+          <Flex alignItems="center">
+            <Link to="/sign-in">
+              <Button ml={2} size={["xs", "md"]}>
+                로그인
+              </Button>
+            </Link>
+            <Menu>
+              <MenuButton
+                as={Button}
+                maxW={40}
+                noOfLines={1}
+                display="flex"
+                alignItems="center"
+                variant="ghost"
+                size={["xs", "md"]}
+                mt={0.5}
+              >
+                <FiMoreVertical size={16} />
+              </MenuButton>
+              <MenuList>
+                <MenuItem>
+                  <Link to="/">코인 가격</Link>
+                </MenuItem>
+                <MenuItem>
+                  <Link to="/post">코인 의견</Link>
+                </MenuItem>
+                <MenuItem>
+                  <Link to="/news">주요 뉴스</Link>
+                </MenuItem>
+                <MenuItem>
+                  <Link to="/qna">Q&A</Link>
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </Flex>
         )}
       </Box>
     </Flex>

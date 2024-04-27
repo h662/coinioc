@@ -24,7 +24,7 @@ const Layout: FC = () => {
     });
 
     supabaseClient.functions.invoke("get-me").then(({ data }) => {
-      if (!data) navigate("/nickname");
+      if (!data?.nickname) navigate("/profile");
 
       setProfile(data);
     });
@@ -40,7 +40,7 @@ const Layout: FC = () => {
 
   return (
     <Flex maxW={768} mx="auto" minH="100vh" flexDir="column" px={2}>
-      {location.pathname !== "/nickname" && (
+      {location.pathname !== "/profile" && (
         <Header session={session} profile={profile} />
       )}
       <Outlet context={{ session, profile, setProfile }} />

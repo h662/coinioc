@@ -1,12 +1,13 @@
 import { Flex, Image, Text } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { FiHeart, FiMessageSquare } from "react-icons/fi";
 import { IPost } from "..";
 import DateText from "./DateText";
 import { getKoreanCurrency } from "../lib/koreanCurrencyConverter";
 import supabaseClient from "../lib/supabaseClient";
 import FluctuationRange from "./FluctuationRange";
+import { OutletContext } from "./Layout";
 
 interface PostCardProps {
   post: IPost;
@@ -17,13 +18,15 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
   const [likes, setLikes] = useState<number>();
   const [isLiked, setIsLiked] = useState<boolean>(false);
 
+  const { session } = useOutletContext<OutletContext>();
+
   const onClickLike = async (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     try {
       e.preventDefault();
 
-      if (likes === undefined) return;
+      if (likes === undefined || !session) return;
 
       const { data } = await supabaseClient.functions.invoke(
         "toggle-post-like",

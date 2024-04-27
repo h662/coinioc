@@ -1,27 +1,30 @@
 import { Button, Flex, Input, Text } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { OutletContext } from "../components/Layout";
 import Background from "../components/Background";
 import supabaseClient from "../lib/supabaseClient";
 
 const Nickname: FC = () => {
+  const { session, profile, setProfile } = useOutletContext<OutletContext>();
+
   const [nickname, setNickname] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { session, setProfile } = useOutletContext<OutletContext>();
-
   const navigate = useNavigate();
 
-  const onClickCreateNickname = async () => {
+  const onClickUpdateeNickname = async () => {
     try {
       if (!nickname) return;
 
       setIsLoading(true);
 
-      const { data } = await supabaseClient.functions.invoke("create-profile", {
-        body: { nickname },
-      });
+      const { data } = await supabaseClient.functions.invoke(
+        "update-nickname",
+        {
+          body: { nickname },
+        }
+      );
 
       setProfile(data);
 
@@ -38,6 +41,12 @@ const Nickname: FC = () => {
       navigate("/");
     }
   }, [session]);
+
+  useEffect(() => {
+    if (!profile) return;
+
+    setNickname(profile.nickname);
+  }, [profile]);
 
   return (
     <>
@@ -61,13 +70,18 @@ const Nickname: FC = () => {
           />
           <Flex gap={2}>
             <Button
-              onClick={onClickCreateNickname}
+              onClick={onClickUpdateeNickname}
               isLoading={isLoading}
               loadingText="처리중..."
-              isDisabled={isLoading}
+              isDisabled={
+                isLoading || nickname === profile?.nickname || !nickname
+              }
             >
               확인
             </Button>
+            <Link to="/">
+              <Button colorScheme="blue">홈</Button>
+            </Link>
             <Button
               onClick={() => supabaseClient.auth.signOut()}
               colorScheme="red"

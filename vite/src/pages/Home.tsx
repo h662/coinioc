@@ -72,8 +72,6 @@ const Home: FC = () => {
           coin2.price_change_percentage_24h - coin1.price_change_percentage_24h
       );
 
-      console.log(topGainers);
-
       setSortedTopGainers(topGainers);
     }
   }, [allCoins]);

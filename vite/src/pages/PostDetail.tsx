@@ -7,6 +7,7 @@ import DateText from "../components/DateText";
 import { getKoreanCurrency } from "../lib/koreanCurrencyConverter";
 import { OutletContext } from "../components/Layout";
 import CommentCard from "../components/CommentCard";
+import FluctuationRange from "../components/FluctuationRange";
 
 const PostDetail: FC = () => {
   const [post, setPost] = useState<IPost>();
@@ -100,6 +101,9 @@ const PostDetail: FC = () => {
           <Text fontSize={[12, 16]} ml={2} fontWeight="semibold">
             {getKoreanCurrency(post.coin_data.current_price)}원
           </Text>
+          <Flex ml={2}>
+            <FluctuationRange coinData={post.coin_data} isBrackets={true} />
+          </Flex>
         </Flex>
       </Flex>
       <Flex roundedBottom={12} p={2} fontSize={[14, 18]}>

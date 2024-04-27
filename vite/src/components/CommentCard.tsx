@@ -5,6 +5,8 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 import { ko } from "date-fns/locale";
 import { FiHeart } from "react-icons/fi";
 import supabaseClient from "../lib/supabaseClient";
+import { useOutletContext } from "react-router-dom";
+import { OutletContext } from "./Layout";
 
 interface CommentCardProps {
   comment: IComment;
@@ -14,13 +16,15 @@ const CommentCard: FC<CommentCardProps> = ({ comment }) => {
   const [likes, setLikes] = useState<number>();
   const [isLiked, setIsLiked] = useState<boolean>(false);
 
+  const { session } = useOutletContext<OutletContext>();
+
   const onClickLike = async (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     try {
       e.preventDefault();
 
-      if (likes === undefined) return;
+      if (likes === undefined || !session) return;
 
       const { data } = await supabaseClient.functions.invoke(
         "toggle-comment-like",
