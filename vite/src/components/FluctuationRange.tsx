@@ -11,7 +11,7 @@ interface FluctuationRangeProps {
 const FluctuationRange: FC<FluctuationRangeProps> = ({
   coinData,
   width = "fit-content",
-  fontSize = 14,
+  fontSize = [10, 14],
   isBrackets = false,
 }) => {
   return (

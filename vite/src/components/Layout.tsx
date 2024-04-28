@@ -23,12 +23,6 @@ const Layout: FC = () => {
       setSession(data.session);
     });
 
-    supabaseClient.functions.invoke("get-me").then(({ data }) => {
-      if (!data?.nickname) navigate("/profile");
-
-      setProfile(data);
-    });
-
     const {
       data: { subscription },
     } = supabaseClient.auth.onAuthStateChange((_event, session) => {
@@ -37,6 +31,14 @@ const Layout: FC = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    supabaseClient.functions.invoke("get-me").then(({ data }) => {
+      if (!data?.nickname) navigate("/profile");
+
+      setProfile(data);
+    });
+  }, [session]);
 
   return (
     <Flex maxW={768} mx="auto" minH="100vh" flexDir="column" px={2}>

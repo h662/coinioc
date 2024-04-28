@@ -14,6 +14,7 @@ const PostDetail: FC = () => {
   const [comment, setComment] = useState<IComment[]>([]);
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [createdCommenId, setCreatedCommentId] = useState<number>(0);
 
   const { session } = useOutletContext<OutletContext>();
 
@@ -32,6 +33,8 @@ const PostDetail: FC = () => {
           postId: id,
         },
       });
+
+      setCreatedCommentId(data.id);
 
       setComment([data, ...comment]);
 
@@ -135,7 +138,11 @@ const PostDetail: FC = () => {
         </Button>
         <Flex mt={2} gap={2} flexDir="column">
           {comment?.map((v, i) => (
-            <CommentCard key={i} comment={v} />
+            <CommentCard
+              key={i}
+              comment={v}
+              createdCommentId={createdCommenId}
+            />
           ))}
         </Flex>
       </Flex>

@@ -10,9 +10,10 @@ import { OutletContext } from "./Layout";
 
 interface CommentCardProps {
   comment: IComment;
+  createdCommentId: number;
 }
 
-const CommentCard: FC<CommentCardProps> = ({ comment }) => {
+const CommentCard: FC<CommentCardProps> = ({ comment, createdCommentId }) => {
   const [likes, setLikes] = useState<number>();
   const [isLiked, setIsLiked] = useState<boolean>(false);
 
@@ -44,6 +45,12 @@ const CommentCard: FC<CommentCardProps> = ({ comment }) => {
   };
 
   useEffect(() => {
+    if (createdCommentId === comment.id) {
+      setLikes(0);
+      setIsLiked(false);
+      return;
+    }
+
     supabaseClient.functions
       .invoke("get-comment-likes-count", { body: { commentId: comment.id } })
       .then(({ data }) => {
@@ -57,7 +64,7 @@ const CommentCard: FC<CommentCardProps> = ({ comment }) => {
 
         setIsLiked(data.is_liked);
       });
-  }, []);
+  }, [createdCommentId]);
 
   return (
     <Flex fontSize={[12, 16]}>
