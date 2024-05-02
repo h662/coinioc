@@ -8,6 +8,7 @@ import { getKoreanCurrency } from "../lib/koreanCurrencyConverter";
 import { OutletContext } from "../components/Layout";
 import CommentCard from "../components/CommentCard";
 import FluctuationRange from "../components/FluctuationRange";
+import { FiHeart } from "react-icons/fi";
 
 const PostDetail: FC = () => {
   const [post, setPost] = useState<IPost>();
@@ -15,6 +16,8 @@ const PostDetail: FC = () => {
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [createdCommenId, setCreatedCommentId] = useState<number>(0);
+  const [likes, setLikes] = useState<number>();
+  const [isLiked, setIsLiked] = useState<boolean>(false);
 
   const { session } = useOutletContext<OutletContext>();
 
@@ -47,6 +50,31 @@ const PostDetail: FC = () => {
     }
   };
 
+  const onClickLike = async (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    try {
+      e.preventDefault();
+
+      if (likes === undefined || !session) return;
+
+      const { data } = await supabaseClient.functions.invoke(
+        "toggle-post-like",
+        { body: { postId: id } }
+      );
+
+      if (data.is_liked) {
+        setLikes(likes + 1);
+        setIsLiked(true);
+      } else {
+        setLikes(likes - 1);
+        setIsLiked(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     supabaseClient.functions
       .invoke("get-post", { body: { id } })
@@ -67,46 +95,75 @@ const PostDetail: FC = () => {
       .then(({ data }) => {
         setComment(data);
       });
+
+    supabaseClient.functions
+      .invoke("get-post-likes-count", { body: { postId: id } })
+      .then(({ data }) => {
+        setLikes(data);
+      });
+
+    supabaseClient.functions
+      .invoke("get-post-is-liked", { body: { postId: id } })
+      .then(({ data }) => {
+        if (!data) return;
+
+        setIsLiked(data.is_liked);
+      });
   }, []);
 
   if (!post) return <Flex>Loading...</Flex>;
 
   return (
     <Flex flexDir="column">
-      <Flex roundedTop={12} py={2} flexDir={["column", "column", "row"]}>
-        <Flex alignItems="center">
-          <Flex noOfLines={2} isTruncated={true} fontSize={[12, 16]}>
-            <Text display="inline-block" fontWeight="semibold">
-              {post.profile.nickname}
+      <Flex roundedTop={12} p={2} justifyContent="space-between">
+        <Flex flexDir={["column", "column", "row"]}>
+          <Flex alignItems="center">
+            <Flex noOfLines={2} isTruncated={true} fontSize={[12, 16]}>
+              <Text display="inline-block" fontWeight="semibold">
+                {post.profile.nickname}
+              </Text>
+              (#
+              {post.user_id.substring(post.user_id.length - 4)})님의
+            </Flex>
+            <Image
+              src={post.coin_data.image}
+              alt={post.coin_data.symbol}
+              w={[6, 8]}
+              h={[6, 8]}
+              objectFit="cover"
+              rounded="full"
+              mx={1}
+            />
+            <Text fontSize={[12, 16]} fontWeight="semibold">
+              {post.coin_data.name}
             </Text>
-            (#
-            {post.user_id.substring(post.user_id.length - 4)})님의
+            <Text fontSize={[12, 16]}>에 대한 의견</Text>
           </Flex>
-          <Image
-            src={post.coin_data.image}
-            alt={post.coin_data.symbol}
-            w={[6, 8]}
-            h={[6, 8]}
-            objectFit="cover"
-            rounded="full"
-            mx={1}
-          />
-          <Text fontSize={[12, 16]} fontWeight="semibold">
-            {post.coin_data.name}
-          </Text>
-          <Text fontSize={[12, 16]}>에 대한 의견</Text>
+          <Flex alignItems="center" ml={[0, 0, 2]}>
+            <DateText date={post.created_at} hours={true} fontSize={[12, 16]} />
+            <Text fontSize={[12, 16]} ml={1}>
+              기준,
+            </Text>
+            <Text fontSize={[12, 16]} ml={2} fontWeight="semibold">
+              {getKoreanCurrency(post.coin_data.current_price)}원
+            </Text>
+            <Flex ml={2}>
+              <FluctuationRange coinData={post.coin_data} isBrackets={true} />
+            </Flex>
+          </Flex>
         </Flex>
-        <Flex alignItems="center" ml={[0, 0, 2]}>
-          <DateText date={post.created_at} hours={true} fontSize={[12, 16]} />
-          <Text fontSize={[12, 16]} ml={1}>
-            기준,
+        <Flex
+          display="flex"
+          alignItems="center"
+          fontSize={[16, 20]}
+          gap={1}
+          _hover={{ color: "gray.500" }}
+          onClick={onClickLike}
+        >
+          <FiHeart color={isLiked ? "red" : ""} />{" "}
+          <Text w={[2.5, 5]} textAlign="right">
+            {likes}
           </Text>
-          <Text fontSize={[12, 16]} ml={2} fontWeight="semibold">
-            {getKoreanCurrency(post.coin_data.current_price)}원
-          </Text>
-          <Flex ml={2}>
-            <FluctuationRange coinData={post.coin_data} isBrackets={true} />
-          </Flex>
         </Flex>
       </Flex>
       <Flex roundedBottom={12} p={2} fontSize={[14, 18]}>

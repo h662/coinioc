@@ -41,7 +41,7 @@ const Post: FC = () => {
       setPosts([...posts, ...temp]);
       setPage(page + 1);
 
-      if (data.length !== 2) {
+      if (data.length !== 5) {
         setIsLastPage(true);
       }
 

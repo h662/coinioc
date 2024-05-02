@@ -34,7 +34,7 @@ const News: FC = () => {
       setYoutubeData([...youtubeData, ...data]);
       setYoutubePage(youtubePage + 1);
 
-      if (data.length !== 2) {
+      if (data.length !== 5) {
         setIsYoutubeLastPage(true);
       }
 
@@ -65,7 +65,7 @@ const News: FC = () => {
       setNewsData([...newsData, ...data]);
       setNewsPage(newsPage + 1);
 
-      if (data.length !== 2) {
+      if (data.length !== 5) {
         setIsNewsLastPage(true);
       }
 

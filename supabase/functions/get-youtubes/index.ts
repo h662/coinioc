@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
 
   const { data } = await supabaseClient.from("youtube").select().order("id", {
     ascending: false,
-  }).range(0 + page * 2, 1 + page * 2);
+  }).range(0 + page * 5, 4 + page * 5);
 
   return new Response(JSON.stringify(data), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
     "*, profile!inner(*)",
   ).order("id", {
     ascending: false,
-  }).range(0 + page * 2, 1 + page * 2);
+  }).range(0 + page * 5, 4 + page * 5);
 
   const commentCounts: Record<number, number> = {};
   for (const post of data) {
