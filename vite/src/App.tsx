@@ -9,6 +9,7 @@ import SignIn from "./pages/SignIn";
 import Profile from "./pages/Profile";
 import Post from "./pages/Post";
 import PostDetail from "./pages/PostDetail";
+import Youtube from "./pages/Youtube";
 
 const App: FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: FC = () => {
           <Route path="/post" element={<Post />} />
           <Route path="/post/:id" element={<PostDetail />} />
           <Route path="/news" element={<News />} />
+          <Route path="/youtube" element={<Youtube />} />
           <Route path="/qna" element={<QNA />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/profile" element={<Profile />} />

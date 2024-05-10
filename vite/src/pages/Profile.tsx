@@ -1,19 +1,20 @@
-import { Button, Flex, Input, Text } from "@chakra-ui/react";
-import { FC, useEffect, useState } from "react";
+import { Avatar, Button, Flex, Input, Text } from "@chakra-ui/react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { OutletContext } from "../components/Layout";
 import Background from "../components/Background";
 import supabaseClient from "../lib/supabaseClient";
 
 const Nickname: FC = () => {
-  const { session, profile, setProfile } = useOutletContext<OutletContext>();
-
   const [nickname, setNickname] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [file, setFile] = useState<File>();
 
+  const { session, profile, setProfile, image } =
+    useOutletContext<OutletContext>();
   const navigate = useNavigate();
 
-  const onClickUpdateeNickname = async () => {
+  const onClickUpdateNickname = async () => {
     try {
       if (!nickname) return;
 
@@ -36,6 +37,16 @@ const Nickname: FC = () => {
     }
   };
 
+  const onChangeFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (e.currentTarget.files === null) return;
+
+      setFile(e.currentTarget.files[0]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (!session) {
       navigate("/");
@@ -48,6 +59,10 @@ const Nickname: FC = () => {
     setNickname(profile.nickname);
   }, [profile]);
 
+  // useEffect(() => {
+  //   console.log(file);
+  // }, [file]);
+
   return (
     <>
       <Flex flexGrow={1} justifyContent="center" alignItems="center">
@@ -59,8 +74,19 @@ const Nickname: FC = () => {
           alignItems="center"
         >
           <Text fontSize={20} fontWeight="bold">
-            닉네임을 설정해주세요.
+            프로필 설정
           </Text>
+          <Flex mt={4} mb={2}>
+            <input
+              style={{ display: "none" }}
+              type="file"
+              id="file"
+              onChange={onChangeFile}
+            />
+            <label htmlFor="file">
+              <Avatar size="lg" name={profile?.nickname} src={image} />
+            </label>
+          </Flex>
           <Input
             my={4}
             placeholder="닉네임"
@@ -70,7 +96,7 @@ const Nickname: FC = () => {
           />
           <Flex gap={2}>
             <Button
-              onClick={onClickUpdateeNickname}
+              onClick={onClickUpdateNickname}
               isLoading={isLoading}
               loadingText="처리중..."
               isDisabled={

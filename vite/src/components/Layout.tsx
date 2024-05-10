@@ -10,11 +10,13 @@ export interface OutletContext {
   session: Session | null;
   profile: IProfile;
   setProfile: Dispatch<SetStateAction<IProfile>>;
+  image: string;
 }
 
 const Layout: FC = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<IProfile>();
+  const [image, setImage] = useState<string>("");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -38,14 +40,30 @@ const Layout: FC = () => {
 
       setProfile(data);
     });
+
+    console.log(session);
   }, [session]);
+
+  useEffect(() => {
+    if (!profile) return;
+
+    if (profile.avartar) {
+      supabaseClient.functions
+        .invoke("get-avartar", {
+          body: { avartar: profile.avartar },
+        })
+        .then(({ data }) => {
+          setImage(data.signedUrl);
+        });
+    }
+  }, [profile]);
 
   return (
     <Flex maxW={768} mx="auto" minH="100vh" flexDir="column" px={2}>
       {location.pathname !== "/profile" && (
-        <Header session={session} profile={profile} />
+        <Header session={session} profile={profile} image={image} />
       )}
-      <Outlet context={{ session, profile, setProfile }} />
+      <Outlet context={{ session, profile, setProfile, image }} />
     </Flex>
   );
 };

@@ -11,50 +11,70 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Session } from "@supabase/supabase-js";
 import { FiMoreVertical } from "react-icons/fi";
 
 import Logo from "/images/logo.svg";
 import supabaseClient from "../lib/supabaseClient";
+import { IProfile } from "..";
 
 interface HeaderProps {
   session: Session | null;
-  profile: any;
+  profile: IProfile | undefined;
+  image: string;
 }
 
-const Header: FC<HeaderProps> = ({ session, profile }) => {
+const Header: FC<HeaderProps> = ({ session, profile, image }) => {
+  const navigate = useNavigate();
+
+  const links = [
+    {
+      to: "/",
+      text: "코인가격",
+    },
+    {
+      to: "/post",
+      text: "코인 의견",
+    },
+    {
+      to: "/news",
+      text: "주요 뉴스",
+    },
+    {
+      to: "/qna",
+      text: "Q&A",
+    },
+  ];
+
+  const myMenu = (
+    <>
+      <MenuItem onClick={() => navigate("/profile")}>프로필</MenuItem>
+      <MenuItem onClick={() => supabaseClient.auth.signOut()}>
+        로그아웃
+      </MenuItem>
+    </>
+  );
+
   return (
     <Flex justifyContent="space-between" alignItems="center">
-      <Link to="/">
-        <Flex py={4} alignItems="center">
-          <Image src={Logo} alt="CoinioC" w={[6, 8]} />
-          <Text ml={1} fontSize={[18, 20]} fontWeight="bold">
-            Coinioc
-          </Text>
-        </Flex>
-      </Link>
+      <Flex py={4} alignItems="center" onClick={() => navigate("/")}>
+        <Image src={Logo} alt="CoinioC" w={[6, 8]} />
+        <Text ml={1} fontSize={[18, 20]} fontWeight="bold">
+          Coinioc
+        </Text>
+      </Flex>
       <Box display={["none", "none", "flex"]} alignItems="center">
-        <Link to="/">
-          <Button variant="ghost" size={["xs", "md"]}>
-            코인 가격
+        {links.map((v, i) => (
+          <Button
+            key={i}
+            variant="ghost"
+            size={["xs", "md"]}
+            onClick={() => navigate(v.to)}
+          >
+            {v.text}
           </Button>
-        </Link>
-        <Link to="/post">
-          <Button variant="ghost" size={["xs", "md"]}>
-            코인 의견
-          </Button>
-        </Link>
-        <Link to="/news">
-          <Button variant="ghost" size={["xs", "md"]}>
-            주요 뉴스
-          </Button>
-        </Link>
-        <Link to="/qna">
-          <Button variant="ghost" size={["xs", "md"]}>
-            Q&A
-          </Button>
-        </Link>
+        ))}
         {session ? (
           <Menu>
             <MenuButton
@@ -71,21 +91,16 @@ const Header: FC<HeaderProps> = ({ session, profile }) => {
                 {profile ? profile.nickname : session.user.email}
               </Flex>
             </MenuButton>
-            <MenuList>
-              <Link to="/profile">
-                <MenuItem>프로필</MenuItem>
-              </Link>
-              <MenuItem onClick={() => supabaseClient.auth.signOut()}>
-                로그아웃
-              </MenuItem>
-            </MenuList>
+            <MenuList>{myMenu}</MenuList>
           </Menu>
         ) : (
-          <Link to="/sign-in">
-            <Button ml={2} size={["xs", "md"]}>
-              로그인
-            </Button>
-          </Link>
+          <Button
+            ml={2}
+            size={["xs", "md"]}
+            onClick={() => navigate("/sign-in")}
+          >
+            로그인
+          </Button>
         )}
       </Box>
       <Box display={["flex", "flex", "none"]}>
@@ -101,29 +116,19 @@ const Header: FC<HeaderProps> = ({ session, profile }) => {
               size={["xs", "md"]}
             >
               <Flex alignItems="center" gap={1} fontSize={[10, 12]}>
-                {profile && <Avatar size="xs" name={profile.nickname} />}
+                {profile && (
+                  <Avatar size="xs" name={profile.nickname} src={image} />
+                )}
                 {profile ? profile.nickname : session.user.email}
               </Flex>
             </MenuButton>
             <MenuList>
-              <Link to="/profile">
-                <MenuItem>프로필</MenuItem>
-              </Link>
-              <MenuItem>
-                <Link to="/">코인 가격</Link>
-              </MenuItem>
-              <MenuItem>
-                <Link to="/post">코인 의견</Link>
-              </MenuItem>
-              <MenuItem>
-                <Link to="/news">주요 뉴스</Link>
-              </MenuItem>
-              <MenuItem>
-                <Link to="/qna">Q&A</Link>
-              </MenuItem>
-              <MenuItem onClick={() => supabaseClient.auth.signOut()}>
-                로그아웃
-              </MenuItem>
+              {links.map((v, i) => (
+                <MenuItem key={i} onClick={() => navigate(v.to)}>
+                  {v.text}
+                </MenuItem>
+              ))}
+              {myMenu}
             </MenuList>
           </Menu>
         ) : (
@@ -147,18 +152,11 @@ const Header: FC<HeaderProps> = ({ session, profile }) => {
                 <FiMoreVertical size={16} />
               </MenuButton>
               <MenuList>
-                <MenuItem>
-                  <Link to="/">코인 가격</Link>
-                </MenuItem>
-                <MenuItem>
-                  <Link to="/post">코인 의견</Link>
-                </MenuItem>
-                <MenuItem>
-                  <Link to="/news">주요 뉴스</Link>
-                </MenuItem>
-                <MenuItem>
-                  <Link to="/qna">Q&A</Link>
-                </MenuItem>
+                {links.map((v, i) => (
+                  <MenuItem key={i} onClick={() => navigate(v.to)}>
+                    {v.text}
+                  </MenuItem>
+                ))}
               </MenuList>
             </Menu>
           </Flex>

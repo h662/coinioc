@@ -32,9 +32,10 @@ export interface ICoinData {
 }
 
 export interface IProfile {
-  id: "string";
-  created_at: "string";
-  nickname: "string";
+  id: string;
+  created_at: string;
+  nickname: string;
+  avartar?: string
 }
 
 export interface IPost {
