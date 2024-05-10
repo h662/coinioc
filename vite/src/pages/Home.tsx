@@ -34,7 +34,7 @@ const Home: FC = () => {
 
       setAllCoins(data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
 
       setAxiosError(error);
     }

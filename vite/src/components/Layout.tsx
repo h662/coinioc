@@ -40,8 +40,6 @@ const Layout: FC = () => {
 
       setProfile(data);
     });
-
-    console.log(session);
   }, [session]);
 
   useEffect(() => {
