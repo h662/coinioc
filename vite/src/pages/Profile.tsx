@@ -59,9 +59,9 @@ const Nickname: FC = () => {
     setNickname(profile.nickname);
   }, [profile]);
 
-  // useEffect(() => {
-  //   console.log(file);
-  // }, [file]);
+  useEffect(() => {
+    console.log(file);
+  }, [file]);
 
   return (
     <>
