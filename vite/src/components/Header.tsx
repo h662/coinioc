@@ -42,6 +42,10 @@ const Header: FC<HeaderProps> = ({ session, profile, image }) => {
       text: "주요 뉴스",
     },
     {
+      to: "/youtube",
+      text: "유튜브",
+    },
+    {
       to: "/qna",
       text: "Q&A",
     },
