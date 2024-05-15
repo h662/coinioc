@@ -5,13 +5,14 @@ import { OutletContext } from "../components/Layout";
 import Background from "../components/Background";
 import supabaseClient from "../lib/supabaseClient";
 
-const Nickname: FC = () => {
+const Profile: FC = () => {
   const [nickname, setNickname] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [file, setFile] = useState<File>();
+  const [isHover, setIsHover] = useState<boolean>(false);
 
-  const { session, profile, setProfile, image } =
+  const { session, profile, setProfile, image, setImage } =
     useOutletContext<OutletContext>();
+
   const navigate = useNavigate();
 
   const onClickUpdateNickname = async () => {
@@ -41,7 +42,20 @@ const Nickname: FC = () => {
     try {
       if (e.currentTarget.files === null) return;
 
-      setFile(e.currentTarget.files[0]);
+      const formData = new FormData();
+
+      formData.append("file", e.currentTarget.files[0]);
+
+      const { error } = await supabaseClient.functions.invoke(
+        "create-avartar",
+        {
+          body: formData,
+        }
+      );
+
+      if (error) return;
+
+      setImage(URL.createObjectURL(formData.get("file") as File));
     } catch (error) {
       console.error(error);
     }
@@ -59,10 +73,6 @@ const Nickname: FC = () => {
     setNickname(profile.nickname);
   }, [profile]);
 
-  useEffect(() => {
-    console.log(file);
-  }, [file]);
-
   return (
     <>
       <Flex flexGrow={1} justifyContent="center" alignItems="center">
@@ -76,7 +86,15 @@ const Nickname: FC = () => {
           <Text fontSize={20} fontWeight="bold">
             프로필 설정
           </Text>
-          <Flex mt={4} mb={2}>
+          <Flex
+            mt={4}
+            mb={2}
+            position="relative"
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+            onTouchStart={() => setIsHover(true)}
+            onTouchEnd={() => setIsHover(false)}
+          >
             <input
               style={{ display: "none" }}
               type="file"
@@ -84,8 +102,28 @@ const Nickname: FC = () => {
               onChange={onChangeFile}
             />
             <label htmlFor="file">
-              <Avatar size="lg" name={profile?.nickname} src={image} />
+              <Avatar
+                cursor="pointer"
+                size="lg"
+                name={profile?.nickname}
+                src={image}
+              />
             </label>
+            {isHover && (
+              <Flex
+                cursor="pointer"
+                position="absolute"
+                backgroundColor="rgba(255,255,255,0.5)"
+                w="full"
+                h="full"
+                rounded="full"
+                justifyContent="center"
+                alignItems="center"
+                fontWeight="bold"
+              >
+                수정
+              </Flex>
+            )}
           </Flex>
           <Input
             my={4}
@@ -122,4 +160,4 @@ const Nickname: FC = () => {
   );
 };
 
-export default Nickname;
+export default Profile;

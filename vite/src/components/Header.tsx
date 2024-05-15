@@ -51,13 +51,20 @@ const Header: FC<HeaderProps> = ({ session, profile, image }) => {
     },
   ];
 
-  const myMenu = (
+  const myMenuComp = (
     <>
       <MenuItem onClick={() => navigate("/profile")}>프로필</MenuItem>
       <MenuItem onClick={() => supabaseClient.auth.signOut()}>
         로그아웃
       </MenuItem>
     </>
+  );
+
+  const profileComp = (
+    <Flex alignItems="center" gap={1} fontSize={[10, 16]}>
+      {profile && <Avatar size="xs" name={profile.nickname} src={image} />}
+      {profile ? profile.nickname : session?.user.email}
+    </Flex>
   );
 
   return (
@@ -90,12 +97,9 @@ const Header: FC<HeaderProps> = ({ session, profile, image }) => {
               variant="ghost"
               size={["xs", "md"]}
             >
-              <Flex alignItems="center" gap={1}>
-                {profile && <Avatar size="sm" name={profile.nickname} />}
-                {profile ? profile.nickname : session.user.email}
-              </Flex>
+              {profileComp}
             </MenuButton>
-            <MenuList>{myMenu}</MenuList>
+            <MenuList>{myMenuComp}</MenuList>
           </Menu>
         ) : (
           <Button
@@ -119,12 +123,7 @@ const Header: FC<HeaderProps> = ({ session, profile, image }) => {
               variant="ghost"
               size={["xs", "md"]}
             >
-              <Flex alignItems="center" gap={1} fontSize={[10, 12]}>
-                {profile && (
-                  <Avatar size="xs" name={profile.nickname} src={image} />
-                )}
-                {profile ? profile.nickname : session.user.email}
-              </Flex>
+              {profileComp}
             </MenuButton>
             <MenuList>
               {links.map((v, i) => (
@@ -132,7 +131,7 @@ const Header: FC<HeaderProps> = ({ session, profile, image }) => {
                   {v.text}
                 </MenuItem>
               ))}
-              {myMenu}
+              {myMenuComp}
             </MenuList>
           </Menu>
         ) : (

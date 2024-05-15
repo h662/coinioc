@@ -11,6 +11,7 @@ export interface OutletContext {
   profile: IProfile;
   setProfile: Dispatch<SetStateAction<IProfile>>;
   image: string;
+  setImage: Dispatch<SetStateAction<string>>;
 }
 
 const Layout: FC = () => {
@@ -61,7 +62,7 @@ const Layout: FC = () => {
       {location.pathname !== "/profile" && (
         <Header session={session} profile={profile} image={image} />
       )}
-      <Outlet context={{ session, profile, setProfile, image }} />
+      <Outlet context={{ session, profile, setProfile, image, setImage }} />
     </Flex>
   );
 };

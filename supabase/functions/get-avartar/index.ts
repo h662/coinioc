@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
   }
 
   const authHeader = req.headers.get("Authorization")!;
-  const { avartar} = await req.json();
+  const { avartar } = await req.json();
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -15,11 +15,10 @@ Deno.serve(async (req) => {
     { global: { headers: { Authorization: authHeader } } },
   );
 
-  const { data: { user } } = await supabaseClient.auth.getUser();
-
-  const { data } = await supabaseClient.storage.from('avartars').createSignedUrl(avartar, 3600)
+  const { data } = await supabaseClient.storage.from("avartars")
+    .createSignedUrl(avartar, 3600);
 
   return new Response(JSON.stringify(data), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });  
+  });
 });
