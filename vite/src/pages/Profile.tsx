@@ -101,28 +101,35 @@ const Profile: FC = () => {
               id="file"
               onChange={onChangeFile}
             />
-            <label htmlFor="file">
-              <Avatar
-                cursor="pointer"
-                size="lg"
-                name={profile?.nickname}
-                src={image}
-              />
-            </label>
+
+            <Avatar
+              cursor="pointer"
+              size="lg"
+              name={profile?.nickname}
+              src={image}
+            />
             {isHover && (
-              <Flex
-                cursor="pointer"
-                position="absolute"
-                backgroundColor="rgba(255,255,255,0.5)"
-                w="full"
-                h="full"
-                rounded="full"
-                justifyContent="center"
-                alignItems="center"
-                fontWeight="bold"
+              <label
+                htmlFor="file"
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                }}
               >
-                수정
-              </Flex>
+                <Flex
+                  cursor="pointer"
+                  backgroundColor="rgba(255,255,255,0.5)"
+                  w="full"
+                  h="full"
+                  rounded="full"
+                  justifyContent="center"
+                  alignItems="center"
+                  fontWeight="bold"
+                >
+                  수정
+                </Flex>
+              </label>
             )}
           </Flex>
           <Input
