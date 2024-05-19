@@ -101,13 +101,14 @@ const Profile: FC = () => {
               id="file"
               onChange={onChangeFile}
             />
-
-            <Avatar
-              cursor="pointer"
-              size="lg"
-              name={profile?.nickname}
-              src={image}
-            />
+            <label htmlFor="file">
+              <Avatar
+                cursor="pointer"
+                size="lg"
+                name={profile?.nickname}
+                src={image}
+              />
+            </label>
             {isHover && (
               <label
                 htmlFor="file"
