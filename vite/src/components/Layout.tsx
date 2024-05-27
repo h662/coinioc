@@ -36,11 +36,19 @@ const Layout: FC = () => {
   }, []);
 
   useEffect(() => {
-    supabaseClient.functions.invoke("get-me").then(({ data }) => {
-      if (!data?.nickname) navigate("/profile");
+    const getMe = async () => {
+      try {
+        const { data } = await supabaseClient.functions.invoke("get-me");
 
-      setProfile(data);
-    });
+        if (!data?.nickname) navigate("/profile");
+
+        setProfile(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getMe();
   }, [session]);
 
   useEffect(() => {
