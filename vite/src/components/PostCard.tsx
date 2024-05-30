@@ -108,7 +108,12 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
                 기준,
               </Text>
               <Text fontSize={[12, 16]} ml={2} fontWeight="semibold">
-                {getKoreanCurrency(post.coin_data.current_price)}원
+                {post.coin_data.current_price >= 100
+                  ? getKoreanCurrency(post.coin_data.current_price)
+                  : post.coin_data.current_price >= 0.001
+                  ? post.coin_data.current_price.toFixed(3)
+                  : post.coin_data.current_price.toFixed(6)}
+                원
               </Text>
               <Flex alignItems="center" ml={2}>
                 <FluctuationRange coinData={post.coin_data} isBrackets={true} />

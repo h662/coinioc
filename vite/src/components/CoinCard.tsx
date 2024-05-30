@@ -113,10 +113,10 @@ const CoinCard: FC<CoinCardProps> = ({ index, coinData }) => {
             align="right"
           >
             {coinData.current_price >= 100
-              ? Math.ceil(coinData.current_price).toLocaleString()
+              ? getKoreanCurrency(coinData.current_price)
               : coinData.current_price >= 0.001
               ? coinData.current_price.toFixed(3)
-              : coinData.current_price.toFixed(6)}{" "}
+              : coinData.current_price.toFixed(6)}
             원
           </Text>
           <FluctuationRange coinData={coinData} width={[12, 14, 16]} />
